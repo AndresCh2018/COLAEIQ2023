@@ -1,0 +1,98 @@
+$Title Tutorial LP Gasoline Supply Chain
+
+
+
+ Sets
+         i /Glasgow,Edinburgh,New-Castle/
+
+         j /Manchester,Sheffield/
+
+         k /Norwich,London,Birmingham,Cardiff/
+;
+
+ Parameters
+
+         a(i) Maximum production capacity of refineries
+/
+Glasgow          200
+Edinburgh        500
+New-Castle       300
+/
+
+
+         b(j) Maximum capacity of distribution centres
+/
+Manchester       650
+Sheffield        300
+/
+
+
+         Dem(k)
+/
+Norwich          250
+London           400
+Birmingham       200
+Cardiff          100
+/
+;
+
+ Table Dij(i,j)  Distances between refineries and distribution centres
+                 Manchester        Sheffield
+Glasgow             214               257
+Edinburgh           216               256
+New-Castle          145               130
+
+
+ Table Djk(j,k) Distances between distribution centres and markets
+                 Norwich        London        Birmingham        Cardiff
+Manchester         192           217             106              197
+Sheffield          156           162              85              194
+
+ Scalar F Freight cost /2/;
+
+
+ Variables
+
+z  Total cost
+;
+
+Positive variables
+
+x(i,j) Flow between refineries and distribution centres
+y(j,k) Flow between distribution centres and markets
+;
+
+
+ Equations
+
+ObjFunction      Objective function
+MaxCapRef(i)     Maximum production capacity
+MaxCapDis(j)     Maximum capacity for distribution centres
+Balance(j)       Balance for distribution centres
+Demand(k)        Equation for the demand
+;
+
+
+MaxCapRef(i)..   sum(j,x(i,j)) =l= a(i)                  ;
+MaxCapDis(j)..   sum(i,x(i,j)) =l= b(j)                  ;
+Balance(j)..     sum(i,x(i,j)) =e= sum(k,y(j,k))         ;
+Demand(k)..      sum(j,y(j,k)) =g= Dem(k)                ;
+ObjFunction..    z =e= sum((i,j),F*1000*Dij(i,j)*x(i,j)) + sum((j,k),F*1000*Djk(j,k)*y(j,k));
+
+
+Model gasoline /all/;
+
+Option LP = cplex;
+
+Solve gasoline using LP minimising z;
+
+Display x.l, x.m, y.l, y.m;
+
+
+
+
+
+
+
+
+
