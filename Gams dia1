@@ -1,0 +1,16 @@
+*First define the variables, in this case Z is a varable, and by not specifying it, it's a free range
+variables Z;
+*Since x cannot be negative, all of these need to be positive
+NonNegative Variables x1,x2;
+*Then I define the equations
+Equations obj,e1,e2,e3;
+*Then I need to give value to the equations with =e=, =l=, =g=.
+obj..Z=E=-x1-2*x2;
+e1..-2*x1+x2=l=2;
+e2..-x1+x2=l=3;
+e3..x1=l=3;
+
+*The I need to select the model
+model FIRSTproblem /ALL/;
+solve FIRSTproblem USING LP MINIMIZING Z;
+display x1.l,x1.m,x2.m,x2.l;
